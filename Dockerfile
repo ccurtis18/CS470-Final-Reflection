@@ -1,19 +1,13 @@
-FROM node:20
+# Angular 20 dev container on Node 24
+FROM node:24
 
-# Create app directory
-WORKDIR /usr/src/lafs
-
-# Install app dependencies
+WORKDIR /usr/src/app
 COPY package*.json ./
+RUN npm ci
 
-RUN npm install -g @angular/cli@v6-lts 
-RUN npm install
-
-# Bundle app source
 COPY . .
-
-# Expose port 4200 outside container
 EXPOSE 4200
 
-# Command used to start application
-CMD ["node","server/server.js"]
+# Use the same proxy file inside the container, but target the host’s API:
+# (proxy.conf.docker.json is created below)
+CMD ["npx","ng","serve","--host","0.0.0.0","--port","4200","--proxy-config","proxy.conf.docker.json"]
